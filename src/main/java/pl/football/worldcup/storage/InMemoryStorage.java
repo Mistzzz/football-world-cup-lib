@@ -26,16 +26,20 @@ public class InMemoryStorage implements MatchStorage {
         }
         FootballMatch footballMatch = match;
         if (match.id() == 0L) {
-            footballMatch = new FootballMatch(match, idCounter.getAndIncrement());
+            footballMatch = new FootballMatch(match, this.idCounter.getAndIncrement());
         }
-        storage.put(footballMatch.id(), footballMatch);
+        this.storage.put(footballMatch.id(), footballMatch);
 
         return footballMatch;
     }
 
     @Override
     public FootballMatch updateMatch(FootballMatch match) {
-        return null;
+        if (this.storage.containsKey(match.id())) {
+            return this.storage.replace(match.id(), match);
+        } else {
+            throw new MatchStorageException("Given match not exist in storage");
+        }
     }
 
     @Override

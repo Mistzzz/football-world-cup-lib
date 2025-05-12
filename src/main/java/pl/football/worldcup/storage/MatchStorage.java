@@ -12,7 +12,5 @@ public interface MatchStorage {
 
     FootballMatch getMatch(Long id);
 
-    List<FootballMatch> getAllMatches();
-
     List<FootballMatch> getAllMatchesInProgress();
 }

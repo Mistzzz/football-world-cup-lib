@@ -16,7 +16,7 @@ import pl.football.worldcup.model.FootballMatch;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@TestMethodOrder(MethodOrderer.MethodName.class)
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 class InMemoryStorageTest {
 
     private static final String HOME_TEAM = "HomeTeam";
@@ -47,6 +47,15 @@ class InMemoryStorageTest {
         FootballMatch storedMatch = storage.get(footballMatch.id());
         assertEquals(storedMatch.homeTeam(), footballMatch.homeTeam());
         assertEquals(storedMatch.awayTeam(), footballMatch.awayTeam());
+    }
+
+    @Test
+    void shouldSaveMatchWithExceptionMathIsNull() {
+        // WHEN
+        MatchStorageException exception = assertThrows(MatchStorageException.class, () -> matchStorage.saveMatch(null));
+
+        // THEN
+        assertEquals("Match cannot be null", exception.getMessage());
     }
 
     @Test
@@ -88,9 +97,18 @@ class InMemoryStorageTest {
 
         assertEquals(1, storage.size());
         FootballMatch storedMatch = storage.get(footballMatch.id());
-        assertEquals(storedMatch.homeTeam(), footballMatch.homeTeam());
-        assertEquals(storedMatch.awayTeam(), footballMatch.awayTeam());
-        assertEquals(storedMatch.startTime(), footballMatch.startTime());
+        assertEquals(storedMatch.homeTeam(), footballMatchUpdated.homeTeam());
+        assertEquals(storedMatch.awayTeam(), footballMatchUpdated.awayTeam());
+        assertEquals(storedMatch.startTime(), footballMatchUpdated.startTime());
+    }
+
+    @Test
+    void shouldUpdateMatchWithExceptionMatchIsNull() {
+        // WHEN
+        MatchStorageException exception = assertThrows(MatchStorageException.class, () -> matchStorage.updateMatch(null));
+
+        // THEN
+        assertEquals("Match cannot be null", exception.getMessage());
     }
 
     @Test

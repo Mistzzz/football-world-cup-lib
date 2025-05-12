@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import pl.football.worldcup.exception.MatchStorageException;
 import pl.football.worldcup.model.FootballMatch;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class InMemoryStorage implements MatchStorage {
 
     private final AtomicLong idCounter = new AtomicLong(1);
@@ -22,6 +24,9 @@ public class InMemoryStorage implements MatchStorage {
 
     @Override
     public FootballMatch saveMatch(FootballMatch match) {
+        if (match == null) {
+            throw new MatchStorageException("Match cannot be null");
+        }
         if (this.storage.containsKey(match.id())) {
             throw new MatchStorageException("Given match already exist in storage");
         }
@@ -36,8 +41,12 @@ public class InMemoryStorage implements MatchStorage {
 
     @Override
     public FootballMatch updateMatch(FootballMatch match) {
-        if (this.storage.containsKey(match.id())) {
-            return this.storage.replace(match.id(), match);
+        if (match == null) {
+            throw new MatchStorageException("Match cannot be null");
+        } else if (this.storage.containsKey(match.id())) {
+            this.storage.put(match.id(), match);
+
+            return match;
         } else {
             throw new MatchStorageException("Given match not exist in storage");
         }
@@ -53,12 +62,10 @@ public class InMemoryStorage implements MatchStorage {
     }
 
     @Override
-    public List<FootballMatch> getAllMatches() {
-        return List.of();
-    }
-
-    @Override
     public List<FootballMatch> getAllMatchesInProgress() {
-        return List.of();
+        return storage.values()
+                .stream()
+                .filter(match -> match.endTime().isEmpty())
+                .collect(Collectors.toList());
     }
 }

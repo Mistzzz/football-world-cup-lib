@@ -1,5 +1,6 @@
 package pl.football.worldcup.storage;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +45,11 @@ public class InMemoryStorage implements MatchStorage {
 
     @Override
     public FootballMatch getMatch(Long id) {
-        return null;
+        if (!this.storage.containsKey(id)) {
+            throw new MatchStorageException(MessageFormat.format("There is no match with id: {0}", id));
+        }
+
+        return this.storage.get(id);
     }
 
     @Override

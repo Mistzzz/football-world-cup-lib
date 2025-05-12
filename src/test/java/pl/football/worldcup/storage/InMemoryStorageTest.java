@@ -5,14 +5,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import pl.football.worldcup.exception.MatchStorageException;
 import pl.football.worldcup.model.FootballMatch;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-
+@TestMethodOrder(MethodOrderer.MethodName.class)
 class InMemoryStorageTest {
 
     private static final String HOME_TEAM = "HomeTeam";
@@ -103,5 +105,42 @@ class InMemoryStorageTest {
 
         // THEN
         assertEquals("Given match not exist in storage", exception.getMessage());
+    }
+
+    @Test
+    void shouldGetMatchSuccessfully() {
+        // GIVEN
+        FootballMatch match = FootballMatch.builder()
+                .id(5L)
+                .homeTeam(HOME_TEAM)
+                .awayTeam(AWAY_TEAM)
+                .build();
+        FootballMatch footballMatch = matchStorage.saveMatch(match);
+
+        // WHEN
+        FootballMatch storageMatch = matchStorage.getMatch(5L);
+
+        assertEquals(1, storage.size());
+        FootballMatch storedMatch = storage.get(footballMatch.id());
+        assertEquals(storedMatch.homeTeam(), storageMatch.homeTeam());
+        assertEquals(storedMatch.awayTeam(), storageMatch.awayTeam());
+        assertEquals(storedMatch.startTime(), storageMatch.startTime());
+    }
+
+    @Test
+    void shouldGetMatchWithExceptionMatchNotExists() {
+        // GIVEN
+        FootballMatch match = FootballMatch.builder()
+                .id(5L)
+                .homeTeam(HOME_TEAM)
+                .awayTeam(AWAY_TEAM)
+                .build();
+        matchStorage.saveMatch(match);
+
+        // WHEN
+        MatchStorageException exception = assertThrows(MatchStorageException.class, () -> matchStorage.getMatch(4L));
+
+        // THEN
+        assertEquals("There is no match with id: 4", exception.getMessage());
     }
 }

@@ -30,6 +30,7 @@ class InMemoryStorageTest {
     void shouldSaveMatchSuccessfully() {
         // GIVEN
         FootballMatch match = FootballMatch.builder()
+                .id(0L)
                 .homeTeam(HOME_TEAM)
                 .awayTeam(AWAY_TEAM)
                 .build();
@@ -47,6 +48,7 @@ class InMemoryStorageTest {
     void shouldSaveMatchWithExceptionMatchAlreadyExists() {
         // GIVEN
         FootballMatch match = FootballMatch.builder()
+                .id(0L)
                 .homeTeam(HOME_TEAM)
                 .awayTeam(AWAY_TEAM)
                 .build();

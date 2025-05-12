@@ -9,4 +9,7 @@ import lombok.Builder;
 public record FootballMatch(Long id, String homeTeam, String awayTeam, LocalDateTime startTime, Optional<LocalDateTime> endTime,
                             MatchScore matchScore) {
 
+    public FootballMatch(FootballMatch match, Long id) {
+        this(id, match.homeTeam, match.awayTeam, match.startTime, match.endTime, match.matchScore);
+    }
 }

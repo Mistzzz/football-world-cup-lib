@@ -2,7 +2,9 @@ package pl.football.worldcup.storage;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -142,5 +144,56 @@ class InMemoryStorageTest {
 
         // THEN
         assertEquals("There is no match with id: 4", exception.getMessage());
+    }
+
+    @Test
+    void shouldGetAllMatchesInProgressSuccessfully() {
+        // GIVEN
+        FootballMatch match = FootballMatch.builder()
+                .id(0L)
+                .homeTeam(HOME_TEAM)
+                .awayTeam(AWAY_TEAM)
+                .startTime(LocalDateTime.now())
+                .build();
+        FootballMatch footballMatch = matchStorage.saveMatch(match);
+
+        // WHEN
+        List<FootballMatch> allMatchesInProgress = matchStorage.getAllMatchesInProgress();
+
+        assertEquals(1, storage.size());
+        FootballMatch storedMatch = storage.get(footballMatch.id());
+        assertEquals(1, allMatchesInProgress.size());
+        assertEquals(storedMatch.homeTeam(), allMatchesInProgress.get(0).homeTeam());
+        assertEquals(storedMatch.awayTeam(), allMatchesInProgress.get(0).awayTeam());
+        assertEquals(storedMatch.startTime(), allMatchesInProgress.get(0).startTime());
+    }
+
+    @Test
+    void shouldGetAllMatchesInProgressWithMatchesAlreadyFinished() {
+        // GIVEN
+        FootballMatch match = FootballMatch.builder()
+                .id(5L)
+                .homeTeam(HOME_TEAM)
+                .awayTeam(AWAY_TEAM)
+                .startTime(LocalDateTime.now())
+                .endTime(Optional.of(LocalDateTime.now()))
+                .build();
+        FootballMatch footballMatch = matchStorage.saveMatch(match);
+
+        // WHEN
+        List<FootballMatch> allMatchesInProgress = matchStorage.getAllMatchesInProgress();
+
+        assertEquals(1, storage.size());
+        FootballMatch storedMatch = storage.get(footballMatch.id());
+        assertEquals(0, allMatchesInProgress.size());
+    }
+
+    @Test
+    void shouldGetAllMatchesInProgressWithNoMatchesDefined() {
+        // WHEN
+        List<FootballMatch> allMatchesInProgress = matchStorage.getAllMatchesInProgress();
+
+        assertEquals(0, storage.size());
+        assertEquals(0, allMatchesInProgress.size());
     }
 }

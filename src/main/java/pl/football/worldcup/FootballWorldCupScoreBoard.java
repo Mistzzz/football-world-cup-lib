@@ -4,15 +4,18 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
-import lombok.RequiredArgsConstructor;
 import pl.football.worldcup.model.FootballMatch;
 import pl.football.worldcup.model.MatchScore;
 
-@RequiredArgsConstructor
 public class FootballWorldCupScoreBoard implements ScoreBoard {
 
     private final MatchStorage matchStorage;
     private final MatchFactory matchFactory;
+
+    public FootballWorldCupScoreBoard() {
+        this.matchStorage = new InMemoryMatchStorage();
+        this.matchFactory = new FootballMatchFactory();
+    }
 
     @Override
     public Long startMatch(String homeTeam, String awayTeam) {

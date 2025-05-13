@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullSource;
 import pl.football.worldcup.exception.FootballMatchException;
 import pl.football.worldcup.model.FootballMatch;
 
@@ -45,17 +46,17 @@ class FootballMatchFactoryTest {
         assertEquals(Optional.empty(), match.endTime());
     }
 
-    @DisplayName("shouldCreateMatchWithExceptionToShortNames: ")
+    @DisplayName("shouldCreateMatchWithExceptionToShortNames:)")
     @ParameterizedTest(name = "case: {0} - {1}")
-    @CsvSource({
+    @CsvSource(value = {
             "Ab, Cd, Given team names (Ab:Cd) are incorrect. Name should be alphanumeric with minimal length equals 3",
-            "Ab, Cdef, Given team name (Ab) are incorrect. Name should be alphanumeric with minimal length equals 3",
-            "Abcd, Cd, Given team name (Cd) are incorrect. Name should be alphanumeric with minimal length equals 3",
-            "null, null, Given team names (Ab:Cd) are incorrect. Name should be alphanumeric with minimal length equals 3",
-            "null, Cdef, Given team name (Ab) are incorrect. Name should be alphanumeric with minimal length equals 3",
-            "Abcd, null, Given team name (Cd) are incorrect. Name should be alphanumeric with minimal length equals 3",
+            "Ab, Cdef, Given team name (Ab) is incorrect. Name should be alphanumeric with minimal length equals 3",
+            "Abcd, Cd, Given team name (Cd) is incorrect. Name should be alphanumeric with minimal length equals 3",
+            "null, null, Given team names (null:null) are incorrect. Name should be alphanumeric with minimal length equals 3",
+            "null, Cdef, Given team name (null) is incorrect. Name should be alphanumeric with minimal length equals 3",
+            "Abcd, null, Given team name (null) is incorrect. Name should be alphanumeric with minimal length equals 3",
 
-    })
+    }, nullValues = "null")
     void shouldCreateMatchWithExceptionToShortNames(String homeTeam, String awayTeam, String expectedException) {
         // GIVEN
         LocalDateTime startTime = LocalDateTime.now();
@@ -65,5 +66,18 @@ class FootballMatchFactoryTest {
 
         // THEN
         assertEquals(expectedException, exception.getMessage());
+    }
+
+
+    @DisplayName("shouldCreateMatchWithExceptionStartTimeNull()")
+    @ParameterizedTest(name = "case: {0}")
+    @NullSource
+    void shouldCreateMatchWithExceptionStartTimeNull(LocalDateTime startTime) {
+        // WHEN
+        FootballMatchException exception =
+                assertThrows(FootballMatchException.class, () -> matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime));
+
+        // THEN
+        assertEquals("Match startTime cannot be null", exception.getMessage());
     }
 }

@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@TestMethodOrder(MethodOrderer.DisplayName.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class FootballMatchFactoryTest {
 
     private static final String HOME_TEAM = "HomeTeam";
@@ -35,6 +36,7 @@ class FootballMatchFactoryTest {
     }
 
     @Test
+    @Order(10)
     void shouldCreateMatchSuccessfully() {
         // GIVEN
         LocalDateTime startTime = LocalDateTime.now();
@@ -59,6 +61,7 @@ class FootballMatchFactoryTest {
             "Abcd, null, Given team name (null) is incorrect. Name should be alphanumeric with minimal length equals 3",
 
     }, nullValues = "null")
+    @Order(20)
     void shouldCreateMatchWithExceptionToShortNames(String homeTeam, String awayTeam, String expectedException) {
         // GIVEN
         LocalDateTime startTime = LocalDateTime.now();
@@ -73,6 +76,7 @@ class FootballMatchFactoryTest {
 
     @ParameterizedTest(name = "case: {0}")
     @NullSource
+    @Order(30)
     void shouldCreateMatchWithExceptionStartTimeNull(LocalDateTime startTime) {
         // WHEN
         FootballMatchException exception =
@@ -83,6 +87,7 @@ class FootballMatchFactoryTest {
     }
 
     @Test
+    @Order(40)
     void shouldUpdateMatchSuccessfully() {
         // GIVEN
         int score = 1;
@@ -103,6 +108,7 @@ class FootballMatchFactoryTest {
 
     @ParameterizedTest
     @MethodSource("matchScore")
+    @Order(50)
     void shouldUpdateMatchWithExceptionMatchScoreIncorrect(MatchScore matchScore) {
         // GIVEN
         LocalDateTime startTime = LocalDateTime.now();
@@ -117,11 +123,91 @@ class FootballMatchFactoryTest {
 
     @ParameterizedTest(name = "case: {0}")
     @NullSource
+    @Order(60)
     void shouldUpdateMatchWithExceptionMatchNull(FootballMatch match) {
         // GIVEN
         MatchScore matchScore = new MatchScore(1, 0);
+
         // WHEN
         FootballMatchException exception = assertThrows(FootballMatchException.class, () -> matchFactory.updateMatchScore(match, matchScore));
+
+        // THEN
+        assertEquals("Match cannot be null", exception.getMessage());
+    }
+
+    @Test
+    @Order(70)
+    void shouldFinishMatchSuccessfully() {
+        // GIVEN
+        LocalDateTime startTime = LocalDateTime.now();
+        FootballMatch match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
+        LocalDateTime endTime = startTime.plusSeconds(1);
+
+        // WHEN
+        match = matchFactory.finishMatch(match, endTime);
+
+        // THEN
+        assertNotNull(match);
+        assertEquals(HOME_TEAM, match.homeTeam());
+        assertEquals(AWAY_TEAM, match.awayTeam());
+        assertEquals(startTime, match.startTime());
+        assertEquals(endTime, match.endTime());
+    }
+
+    @Test
+    @Order(80)
+    void shouldFinishMatchWithExceptionEndTimeBeforeStartTime() {
+        // GIVEN
+        LocalDateTime startTime = LocalDateTime.now();
+        FootballMatch match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
+        LocalDateTime endTime = startTime.minusSeconds(1);
+
+        // WHEN
+        FootballMatchException exception = assertThrows(FootballMatchException.class, () -> matchFactory.finishMatch(match, endTime));
+
+        // THEN
+        assertEquals("Match end time value is before start time", exception.getMessage());
+    }
+
+    @Test
+    @Order(90)
+    void shouldFinishMatchWithExceptionMatchAlreadyFinished() {
+        // GIVEN
+        LocalDateTime startTime = LocalDateTime.now();
+        FootballMatch match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
+        LocalDateTime endTime = startTime.plusSeconds(1);
+        final FootballMatch savedMatch = matchFactory.finishMatch(match, endTime);
+
+        // WHEN
+        FootballMatchException exception = assertThrows(FootballMatchException.class, () -> matchFactory.finishMatch(savedMatch, endTime));
+
+        // THEN
+        assertEquals("Match has been already finished", exception.getMessage());
+    }
+
+    @ParameterizedTest(name = "case: {0}")
+    @NullSource
+    @Order(100)
+    void shouldFinishMatchWithExceptionMatchNull(FootballMatch match) {
+        // GIVEN
+        LocalDateTime endTime = LocalDateTime.now();
+
+        // WHEN
+        FootballMatchException exception = assertThrows(FootballMatchException.class, () -> matchFactory.finishMatch(match, endTime));
+
+        // THEN
+        assertEquals("Match cannot be null", exception.getMessage());
+    }
+
+    @ParameterizedTest(name = "case: {0}")
+    @NullSource
+    @Order(110)
+    void shouldFinishMatchWithExceptionEndTimeNull(LocalDateTime endTime) {
+        // GIVEN
+        FootballMatch match = FootballMatch.builder().build();
+
+        // WHEN
+        FootballMatchException exception = assertThrows(FootballMatchException.class, () -> matchFactory.finishMatch(match, endTime));
 
         // THEN
         assertEquals("Match cannot be null", exception.getMessage());

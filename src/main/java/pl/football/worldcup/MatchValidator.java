@@ -1,12 +1,11 @@
-package pl.football.worldcup.util;
+package pl.football.worldcup;
 
 import java.time.LocalDateTime;
 
 import lombok.experimental.UtilityClass;
-import pl.football.worldcup.model.MatchScore;
 
 @UtilityClass
-public class MatchValidator {
+class MatchValidator {
 
     private static final String TEAM_NAME_PATTERN = "^\\w{3,}$";
 
@@ -14,8 +13,8 @@ public class MatchValidator {
         return name == null || !name.matches(TEAM_NAME_PATTERN);
     }
 
-    public boolean isCorrectMatchScores(MatchScore matchScores) {
-        return matchScores != null && matchScores.homeScore() >= 0 && matchScores.awayScore() >= 0;
+    public boolean isCorrectMatchScores(Score scores) {
+        return scores != null && scores.homeScore() >= 0 && scores.awayScore() >= 0;
     }
 
     public boolean isEndAfterStartTime(LocalDateTime startTime, LocalDateTime endTime) {

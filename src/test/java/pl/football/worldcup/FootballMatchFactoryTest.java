@@ -15,8 +15,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import pl.football.worldcup.exception.FootballMatchException;
-import pl.football.worldcup.model.FootballMatch;
-import pl.football.worldcup.model.MatchScore;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -42,7 +40,7 @@ class FootballMatchFactoryTest {
         LocalDateTime startTime = LocalDateTime.now();
 
         // WHEN
-        FootballMatch match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
+        Match match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
 
         assertNotNull(match);
         assertEquals(HOME_TEAM, match.homeTeam());
@@ -92,30 +90,30 @@ class FootballMatchFactoryTest {
         // GIVEN
         int score = 1;
         LocalDateTime startTime = LocalDateTime.now();
-        FootballMatch match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
+        Match match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
 
         // WHEN
-        FootballMatch footballMatch = matchFactory.updateMatchScore(match, new MatchScore(score, score));
+        Match footballMatch = matchFactory.updateMatchScore(match, new Score(score, score));
 
         // THEN
         assertNotNull(footballMatch);
         assertEquals(HOME_TEAM, footballMatch.homeTeam());
         assertEquals(AWAY_TEAM, footballMatch.awayTeam());
         assertEquals(startTime, footballMatch.startTime());
-        assertEquals(score, footballMatch.matchScore().homeScore());
-        assertEquals(score, footballMatch.matchScore().awayScore());
+        assertEquals(score, footballMatch.score().homeScore());
+        assertEquals(score, footballMatch.score().awayScore());
     }
 
     @ParameterizedTest
     @MethodSource("matchScore")
     @Order(50)
-    void shouldUpdateMatchWithExceptionMatchScoreIncorrect(MatchScore matchScore) {
+    void shouldUpdateMatchWithExceptionMatchScoreIncorrect(Score score) {
         // GIVEN
         LocalDateTime startTime = LocalDateTime.now();
-        FootballMatch match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
+        Match match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
 
         // WHEN
-        FootballMatchException exception = assertThrows(FootballMatchException.class, () -> matchFactory.updateMatchScore(match, matchScore));
+        FootballMatchException exception = assertThrows(FootballMatchException.class, () -> matchFactory.updateMatchScore(match, score));
 
         // THEN
         assertEquals("Match score is incorrect. Score should be greater or equal 0", exception.getMessage());
@@ -124,12 +122,12 @@ class FootballMatchFactoryTest {
     @ParameterizedTest(name = "case: {0}")
     @NullSource
     @Order(60)
-    void shouldUpdateMatchWithExceptionMatchNull(FootballMatch match) {
+    void shouldUpdateMatchWithExceptionMatchNull(Match match) {
         // GIVEN
-        MatchScore matchScore = new MatchScore(1, 0);
+        Score score = new Score(1, 0);
 
         // WHEN
-        FootballMatchException exception = assertThrows(FootballMatchException.class, () -> matchFactory.updateMatchScore(match, matchScore));
+        FootballMatchException exception = assertThrows(FootballMatchException.class, () -> matchFactory.updateMatchScore(match, score));
 
         // THEN
         assertEquals("Match cannot be null", exception.getMessage());
@@ -140,7 +138,7 @@ class FootballMatchFactoryTest {
     void shouldFinishMatchSuccessfully() {
         // GIVEN
         LocalDateTime startTime = LocalDateTime.now();
-        FootballMatch match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
+        Match match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
         LocalDateTime endTime = startTime.plusSeconds(1);
 
         // WHEN
@@ -159,7 +157,7 @@ class FootballMatchFactoryTest {
     void shouldFinishMatchWithExceptionEndTimeBeforeStartTime() {
         // GIVEN
         LocalDateTime startTime = LocalDateTime.now();
-        FootballMatch match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
+        Match match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
         LocalDateTime endTime = startTime.minusSeconds(1);
 
         // WHEN
@@ -174,9 +172,9 @@ class FootballMatchFactoryTest {
     void shouldFinishMatchWithExceptionMatchAlreadyFinished() {
         // GIVEN
         LocalDateTime startTime = LocalDateTime.now();
-        FootballMatch match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
+        Match match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
         LocalDateTime endTime = startTime.plusSeconds(1);
-        final FootballMatch savedMatch = matchFactory.finishMatch(match, endTime);
+        final Match savedMatch = matchFactory.finishMatch(match, endTime);
 
         // WHEN
         FootballMatchException exception = assertThrows(FootballMatchException.class, () -> matchFactory.finishMatch(savedMatch, endTime));
@@ -188,7 +186,7 @@ class FootballMatchFactoryTest {
     @ParameterizedTest(name = "case: {0}")
     @NullSource
     @Order(100)
-    void shouldFinishMatchWithExceptionMatchNull(FootballMatch match) {
+    void shouldFinishMatchWithExceptionMatchNull(Match match) {
         // GIVEN
         LocalDateTime endTime = LocalDateTime.now();
 
@@ -204,7 +202,7 @@ class FootballMatchFactoryTest {
     @Order(110)
     void shouldFinishMatchWithExceptionEndTimeNull(LocalDateTime endTime) {
         // GIVEN
-        FootballMatch match = FootballMatch.builder().build();
+        Match match = Match.builder().build();
 
         // WHEN
         FootballMatchException exception = assertThrows(FootballMatchException.class, () -> matchFactory.finishMatch(match, endTime));
@@ -213,12 +211,12 @@ class FootballMatchFactoryTest {
         assertEquals("Match end time cannot be null", exception.getMessage());
     }
 
-    private static List<MatchScore> matchScore() {
+    private static List<Score> matchScore() {
         return Arrays.asList(
                 null,
-                new MatchScore(-1, 0),
-                new MatchScore(0, -1),
-                new MatchScore(-4, -5)
+                new Score(-1, 0),
+                new Score(0, -1),
+                new Score(-4, -5)
         );
     }
 }

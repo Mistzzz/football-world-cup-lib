@@ -5,9 +5,6 @@ import java.util.Comparator;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
-import pl.football.worldcup.model.FootballMatch;
-import pl.football.worldcup.model.MatchScore;
-import pl.football.worldcup.storage.MatchStorage;
 
 @RequiredArgsConstructor
 public class FootballWorldCupScoreBoard implements ScoreBoard {
@@ -22,14 +19,14 @@ public class FootballWorldCupScoreBoard implements ScoreBoard {
 
     @Override
     public Long startMatch(String homeTeam, String awayTeam, LocalDateTime startTime) {
-        FootballMatch match = matchFactory.createMatch(homeTeam, awayTeam, startTime);
+        Match match = matchFactory.createMatch(homeTeam, awayTeam, startTime);
         match = matchStorage.saveMatch(match);
 
         return match.id();
     }
 
     @Override
-    public boolean updateScore(Long id, MatchScore matchScore) {
+    public boolean updateScore(Long id, Score score) {
         return false;
     }
 
@@ -39,11 +36,11 @@ public class FootballWorldCupScoreBoard implements ScoreBoard {
     }
 
     @Override
-    public List<FootballMatch> getSummaryMatchesByTotalScore() {
-        List<FootballMatch> allInProgressMatches = matchStorage.getAllMatchesInProgress();
+    public List<Match> getSummaryMatchesByTotalScore() {
+        List<Match> allInProgressMatches = matchStorage.getAllMatchesInProgress();
         allInProgressMatches
-                .sort(Comparator.comparingInt(FootballMatch::getTotalScore)
-                        .thenComparing(FootballMatch::startTime)
+                .sort(Comparator.comparingInt(Match::getTotalScore)
+                        .thenComparing(Match::startTime)
                         .reversed());
 
         return allInProgressMatches;

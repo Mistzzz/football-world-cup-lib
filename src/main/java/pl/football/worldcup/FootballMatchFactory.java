@@ -4,42 +4,39 @@ import java.text.MessageFormat;
 import java.time.LocalDateTime;
 
 import pl.football.worldcup.exception.FootballMatchException;
-import pl.football.worldcup.model.FootballMatch;
-import pl.football.worldcup.model.MatchScore;
-import pl.football.worldcup.util.MatchValidator;
 
 class FootballMatchFactory implements MatchFactory {
 
     @Override
-    public FootballMatch createMatch(String homeTeam, String awayTeam, LocalDateTime startTime) {
+    public Match createMatch(String homeTeam, String awayTeam, LocalDateTime startTime) {
         validateTeamNames(homeTeam, awayTeam);
         if (startTime == null) {
             throw new FootballMatchException("Match startTime cannot be null");
         }
 
-        return FootballMatch.builder()
+        return Match.builder()
                 .id(0L)
                 .homeTeam(homeTeam)
                 .awayTeam(awayTeam)
                 .startTime(startTime)
-                .matchScore(initMatchScore())
+                .score(initMatchScore())
                 .build();
     }
 
     @Override
-    public FootballMatch updateMatchScore(FootballMatch match, MatchScore matchScore) {
+    public Match updateMatchScore(Match match, Score score) {
         if (match == null) {
             throw new FootballMatchException("Match cannot be null");
         }
-        if (!MatchValidator.isCorrectMatchScores(matchScore)) {
+        if (!MatchValidator.isCorrectMatchScores(score)) {
             throw new FootballMatchException("Match score is incorrect. Score should be greater or equal 0");
         }
 
-        return new FootballMatch(match, matchScore);
+        return new Match(match, score);
     }
 
     @Override
-    public FootballMatch finishMatch(FootballMatch match, LocalDateTime endTime) {
+    public Match finishMatch(Match match, LocalDateTime endTime) {
         if (match == null) {
             throw new FootballMatchException("Match cannot be null");
         }
@@ -50,7 +47,7 @@ class FootballMatchFactory implements MatchFactory {
             throw new FootballMatchException("Match has been already finished");
         }
         if (MatchValidator.isEndAfterStartTime(match.startTime(), endTime)) {
-            return new FootballMatch(match, endTime);
+            return new Match(match, endTime);
         } else {
             throw new FootballMatchException("Match end time value is before start time");
         }
@@ -77,7 +74,7 @@ class FootballMatchFactory implements MatchFactory {
         }
     }
 
-    private MatchScore initMatchScore() {
-        return new MatchScore(0, 0);
+    private Score initMatchScore() {
+        return new Score(0, 0);
     }
 }

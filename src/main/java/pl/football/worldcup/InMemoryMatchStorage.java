@@ -1,4 +1,4 @@
-package pl.football.worldcup.storage;
+package pl.football.worldcup;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -10,29 +10,28 @@ import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import pl.football.worldcup.exception.MatchStorageException;
-import pl.football.worldcup.model.FootballMatch;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public class InMemoryStorage implements MatchStorage {
+class InMemoryMatchStorage implements MatchStorage {
 
     private final AtomicLong idCounter = new AtomicLong(1);
-    private final Map<Long, FootballMatch> storage;
+    private final Map<Long, Match> storage;
 
-    public InMemoryStorage() {
+    public InMemoryMatchStorage() {
         this(new HashMap<>());
     }
 
     @Override
-    public FootballMatch saveMatch(FootballMatch match) {
+    public Match saveMatch(Match match) {
         if (match == null) {
             throw new MatchStorageException("Match cannot be null");
         }
         if (this.storage.containsKey(match.id())) {
             throw new MatchStorageException("Given match already exist in storage");
         }
-        FootballMatch footballMatch = match;
+        Match footballMatch = match;
         if (match.id() == 0L) {
-            footballMatch = new FootballMatch(match, this.idCounter.getAndIncrement());
+            footballMatch = new Match(match, this.idCounter.getAndIncrement());
         }
         this.storage.put(footballMatch.id(), footballMatch);
 
@@ -40,7 +39,7 @@ public class InMemoryStorage implements MatchStorage {
     }
 
     @Override
-    public FootballMatch updateMatch(FootballMatch match) {
+    public Match updateMatch(Match match) {
         if (match == null) {
             throw new MatchStorageException("Match cannot be null");
         } else if (this.storage.containsKey(match.id())) {
@@ -53,7 +52,7 @@ public class InMemoryStorage implements MatchStorage {
     }
 
     @Override
-    public FootballMatch getMatch(Long id) {
+    public Match getMatch(Long id) {
         if (!this.storage.containsKey(id)) {
             throw new MatchStorageException(MessageFormat.format("There is no match with id: {0}", id));
         }
@@ -62,7 +61,7 @@ public class InMemoryStorage implements MatchStorage {
     }
 
     @Override
-    public List<FootballMatch> getAllMatchesInProgress() {
+    public List<Match> getAllMatchesInProgress() {
         return storage.values()
                 .stream()
                 .filter(match -> match.endTime().isEmpty())

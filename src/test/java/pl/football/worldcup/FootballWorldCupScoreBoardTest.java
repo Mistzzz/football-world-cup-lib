@@ -1,5 +1,6 @@
 package pl.football.worldcup;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -73,5 +74,19 @@ class FootballWorldCupScoreBoardTest {
         assertEquals(0, matchScore.homeScore());
         assertEquals(1, matchScore.awayScore());
         assertEquals(1, match.getTotalScore());
+    }
+
+    @Test
+    void shouldFinishMatchSuccessfully() {
+        // GIVEN
+        LocalDateTime dateTime = LocalDateTime.of(2025, 5, 12, 1, 1, 1, 0);
+        Long matchId = scoreBoard.startMatch(HOME_TEAM, AWAY_TEAM, dateTime);
+
+        // WHEN
+        scoreBoard.finishMatch(matchId);
+
+        // THEN
+        List<FootballMatch> summaryMatchesByTotalScore = scoreBoard.getSummaryMatchesByTotalScore();
+        assertEquals(0, summaryMatchesByTotalScore.size());
     }
 }

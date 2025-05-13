@@ -41,7 +41,9 @@ public class FootballWorldCupScoreBoard implements ScoreBoard {
 
     @Override
     public void finishMatch(Long id) {
-
+        Match match = matchStorage.getMatch(id);
+        match = matchFactory.finishMatch(match, LocalDateTime.now());
+        matchStorage.updateMatch(match);
     }
 
     @Override

@@ -1,18 +1,21 @@
 package pl.football.worldcup;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import pl.football.worldcup.exception.FootballMatchException;
 import pl.football.worldcup.model.FootballMatch;
+import pl.football.worldcup.model.MatchScore;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -46,7 +49,6 @@ class FootballMatchFactoryTest {
         assertEquals(Optional.empty(), match.endTime());
     }
 
-    @DisplayName("shouldCreateMatchWithExceptionToShortNames:)")
     @ParameterizedTest(name = "case: {0} - {1}")
     @CsvSource(value = {
             "Ab, Cd, Given team names (Ab:Cd) are incorrect. Name should be alphanumeric with minimal length equals 3",
@@ -69,7 +71,6 @@ class FootballMatchFactoryTest {
     }
 
 
-    @DisplayName("shouldCreateMatchWithExceptionStartTimeNull()")
     @ParameterizedTest(name = "case: {0}")
     @NullSource
     void shouldCreateMatchWithExceptionStartTimeNull(LocalDateTime startTime) {
@@ -79,5 +80,59 @@ class FootballMatchFactoryTest {
 
         // THEN
         assertEquals("Match startTime cannot be null", exception.getMessage());
+    }
+
+    @Test
+    void shouldUpdateMatchSuccessfully() {
+        // GIVEN
+        int score = 1;
+        LocalDateTime startTime = LocalDateTime.now();
+        FootballMatch match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
+
+        // WHEN
+        FootballMatch footballMatch = matchFactory.updateMatchScore(match, new MatchScore(score, score));
+
+        // THEN
+        assertNotNull(footballMatch);
+        assertEquals(HOME_TEAM, footballMatch.homeTeam());
+        assertEquals(AWAY_TEAM, footballMatch.awayTeam());
+        assertEquals(startTime, footballMatch.startTime());
+        assertEquals(score, footballMatch.matchScore().homeScore());
+        assertEquals(score, footballMatch.matchScore().awayScore());
+    }
+
+    @ParameterizedTest
+    @MethodSource("matchScore")
+    void shouldUpdateMatchWithExceptionMatchScoreIncorrect(MatchScore matchScore) {
+        // GIVEN
+        LocalDateTime startTime = LocalDateTime.now();
+        FootballMatch match = matchFactory.createMatch(HOME_TEAM, AWAY_TEAM, startTime);
+
+        // WHEN
+        FootballMatchException exception = assertThrows(FootballMatchException.class, () -> matchFactory.updateMatchScore(match, matchScore));
+
+        // THEN
+        assertEquals("Match score is incorrect. Score should be greater or equal 0", exception.getMessage());
+    }
+
+    @ParameterizedTest(name = "case: {0}")
+    @NullSource
+    void shouldUpdateMatchWithExceptionMatchNull(FootballMatch match) {
+        // GIVEN
+        MatchScore matchScore = new MatchScore(1, 0);
+        // WHEN
+        FootballMatchException exception = assertThrows(FootballMatchException.class, () -> matchFactory.updateMatchScore(match, matchScore));
+
+        // THEN
+        assertEquals("Match cannot be null", exception.getMessage());
+    }
+
+    private static List<MatchScore> matchScore() {
+        return Arrays.asList(
+                null,
+                new MatchScore(-1, 0),
+                new MatchScore(0, -1),
+                new MatchScore(-4, -5)
+        );
     }
 }

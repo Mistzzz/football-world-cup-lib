@@ -40,7 +40,20 @@ class FootballMatchFactory implements MatchFactory {
 
     @Override
     public FootballMatch finishMatch(FootballMatch match, LocalDateTime endTime) {
-        return null;
+        if (match == null) {
+            throw new FootballMatchException("Match cannot be null");
+        }
+        if (endTime == null) {
+            throw new FootballMatchException("Match end time cannot be null");
+        }
+        if (match.endTime().isPresent()) {
+            throw new FootballMatchException("Match has been already finished");
+        }
+        if (MatchValidator.isEndAfterStartTime(match.startTime(), endTime)) {
+            return new FootballMatch(match, endTime);
+        } else {
+            throw new FootballMatchException("Match end time value is before start time");
+        }
     }
 
     private void validateTeamNames(String homeTeam, String awayTeam) {

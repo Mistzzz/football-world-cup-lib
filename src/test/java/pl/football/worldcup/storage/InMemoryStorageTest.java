@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import pl.football.worldcup.exception.MatchStorageException;
@@ -16,7 +17,7 @@ import pl.football.worldcup.model.FootballMatch;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@TestMethodOrder(MethodOrderer.DisplayName.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class InMemoryStorageTest {
 
     private static final String HOME_TEAM = "HomeTeam";
@@ -32,6 +33,7 @@ class InMemoryStorageTest {
     }
 
     @Test
+    @Order(10)
     void shouldSaveMatchSuccessfully() {
         // GIVEN
         FootballMatch match = FootballMatch.builder()
@@ -50,6 +52,7 @@ class InMemoryStorageTest {
     }
 
     @Test
+    @Order(20)
     void shouldSaveMatchWithExceptionMathIsNull() {
         // WHEN
         MatchStorageException exception = assertThrows(MatchStorageException.class, () -> matchStorage.saveMatch(null));
@@ -59,6 +62,7 @@ class InMemoryStorageTest {
     }
 
     @Test
+    @Order(30)
     void shouldSaveMatchWithExceptionMatchAlreadyExists() {
         // GIVEN
         FootballMatch match = FootballMatch.builder()
@@ -76,6 +80,7 @@ class InMemoryStorageTest {
     }
 
     @Test
+    @Order(40)
     void shouldUpdateMatchSuccessfully() {
         // GIVEN
         FootballMatch match = FootballMatch.builder()
@@ -103,6 +108,7 @@ class InMemoryStorageTest {
     }
 
     @Test
+    @Order(50)
     void shouldUpdateMatchWithExceptionMatchIsNull() {
         // WHEN
         MatchStorageException exception = assertThrows(MatchStorageException.class, () -> matchStorage.updateMatch(null));
@@ -112,6 +118,7 @@ class InMemoryStorageTest {
     }
 
     @Test
+    @Order(60)
     void shouldUpdateMatchWithExceptionMatchNotExists() {
         // GIVEN
         FootballMatch match = FootballMatch.builder()
@@ -128,6 +135,7 @@ class InMemoryStorageTest {
     }
 
     @Test
+    @Order(70)
     void shouldGetMatchSuccessfully() {
         // GIVEN
         FootballMatch match = FootballMatch.builder()
@@ -148,6 +156,7 @@ class InMemoryStorageTest {
     }
 
     @Test
+    @Order(80)
     void shouldGetMatchWithExceptionMatchNotExists() {
         // GIVEN
         FootballMatch match = FootballMatch.builder()
@@ -165,6 +174,7 @@ class InMemoryStorageTest {
     }
 
     @Test
+    @Order(90)
     void shouldGetAllMatchesInProgressSuccessfully() {
         // GIVEN
         FootballMatch match = FootballMatch.builder()
@@ -187,6 +197,7 @@ class InMemoryStorageTest {
     }
 
     @Test
+    @Order(100)
     void shouldGetAllMatchesInProgressWithMatchesAlreadyFinished() {
         // GIVEN
         FootballMatch match = FootballMatch.builder()
@@ -207,6 +218,7 @@ class InMemoryStorageTest {
     }
 
     @Test
+    @Order(110)
     void shouldGetAllMatchesInProgressWithNoMatchesDefined() {
         // WHEN
         List<FootballMatch> allMatchesInProgress = matchStorage.getAllMatchesInProgress();

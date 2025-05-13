@@ -1,5 +1,7 @@
 package pl.football.worldcup.util;
 
+import java.time.LocalDateTime;
+
 import lombok.experimental.UtilityClass;
 import pl.football.worldcup.model.MatchScore;
 
@@ -14,5 +16,9 @@ public class MatchValidator {
 
     public boolean isCorrectMatchScores(MatchScore matchScores) {
         return matchScores != null && matchScores.homeScore() >= 0 && matchScores.awayScore() >= 0;
+    }
+
+    public boolean isEndAfterStartTime(LocalDateTime startTime, LocalDateTime endTime) {
+        return startTime != null && endTime != null && endTime.isAfter(startTime);
     }
 }

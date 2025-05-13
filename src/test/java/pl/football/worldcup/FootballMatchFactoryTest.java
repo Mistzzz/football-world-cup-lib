@@ -151,7 +151,7 @@ class FootballMatchFactoryTest {
         assertEquals(HOME_TEAM, match.homeTeam());
         assertEquals(AWAY_TEAM, match.awayTeam());
         assertEquals(startTime, match.startTime());
-        assertEquals(endTime, match.endTime());
+        assertEquals(endTime, match.endTime().get());
     }
 
     @Test
@@ -210,7 +210,7 @@ class FootballMatchFactoryTest {
         FootballMatchException exception = assertThrows(FootballMatchException.class, () -> matchFactory.finishMatch(match, endTime));
 
         // THEN
-        assertEquals("Match cannot be null", exception.getMessage());
+        assertEquals("Match end time cannot be null", exception.getMessage());
     }
 
     private static List<MatchScore> matchScore() {

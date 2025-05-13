@@ -20,4 +20,8 @@ public record FootballMatch(Long id, String homeTeam, String awayTeam, LocalDate
     public FootballMatch(FootballMatch match, MatchScore matchScore) {
         this(match.id, match.homeTeam, match.awayTeam, match.startTime, match.endTime, matchScore);
     }
+
+    public FootballMatch(FootballMatch match, LocalDateTime endTime) {
+        this(match.id, match.homeTeam, match.awayTeam, match.startTime, Optional.of(endTime), match.matchScore);
+    }
 }

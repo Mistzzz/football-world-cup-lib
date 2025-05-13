@@ -31,7 +31,7 @@ class FootballMatchFactoryTest {
     }
 
     @Test
-    void shouldSaveMatchSuccessfully() {
+    void shouldCreateMatchSuccessfully() {
         // GIVEN
         LocalDateTime startTime = LocalDateTime.now();
 
@@ -45,7 +45,7 @@ class FootballMatchFactoryTest {
         assertEquals(Optional.empty(), match.endTime());
     }
 
-    @DisplayName("shouldSaveMatchWithExceptionToShortNames: ")
+    @DisplayName("shouldCreateMatchWithExceptionToShortNames: ")
     @ParameterizedTest(name = "case: {0} - {1}")
     @CsvSource({
             "Ab, Cd, Given team names (Ab:Cd) are incorrect. Name should be alphanumeric with minimal length equals 3",
@@ -56,7 +56,7 @@ class FootballMatchFactoryTest {
             "Abcd, null, Given team name (Cd) are incorrect. Name should be alphanumeric with minimal length equals 3",
 
     })
-    void shouldSaveMatchWithExceptionToShortNames(String homeTeam, String awayTeam, String expectedException) {
+    void shouldCreateMatchWithExceptionToShortNames(String homeTeam, String awayTeam, String expectedException) {
         // GIVEN
         LocalDateTime startTime = LocalDateTime.now();
 

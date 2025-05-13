@@ -28,7 +28,14 @@ class FootballMatchFactory implements MatchFactory {
 
     @Override
     public FootballMatch updateMatchScore(FootballMatch match, MatchScore matchScore) {
-        return null;
+        if (match == null) {
+            throw new FootballMatchException("Match cannot be null");
+        }
+        if (!MatchValidator.isCorrectMatchScores(matchScore)) {
+            throw new FootballMatchException("Match score is incorrect. Score should be greater or equal 0");
+        }
+
+        return new FootballMatch(match, matchScore);
     }
 
     @Override

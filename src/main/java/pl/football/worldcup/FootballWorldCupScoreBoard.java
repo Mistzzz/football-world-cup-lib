@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import pl.football.worldcup.model.FootballMatch;
+import pl.football.worldcup.model.MatchScore;
 
 @RequiredArgsConstructor
 public class FootballWorldCupScoreBoard implements ScoreBoard {
@@ -26,8 +28,15 @@ public class FootballWorldCupScoreBoard implements ScoreBoard {
     }
 
     @Override
-    public boolean updateScore(Long id, Score score) {
-        return false;
+    public boolean updateScore(Long id, MatchScore score) {
+        try {
+            Match match = matchStorage.getMatch(id);
+            match = matchFactory.updateMatchScore(match, ModelMapper.map(score));
+            matchStorage.updateMatch(match);
+            return Boolean.TRUE;
+        } catch (Exception e) {
+            return Boolean.FALSE;
+        }
     }
 
     @Override
@@ -36,13 +45,13 @@ public class FootballWorldCupScoreBoard implements ScoreBoard {
     }
 
     @Override
-    public List<Match> getSummaryMatchesByTotalScore() {
+    public List<FootballMatch> getSummaryMatchesByTotalScore() {
         List<Match> allInProgressMatches = matchStorage.getAllMatchesInProgress();
         allInProgressMatches
                 .sort(Comparator.comparingInt(Match::getTotalScore)
                         .thenComparing(Match::startTime)
                         .reversed());
 
-        return allInProgressMatches;
+        return ModelMapper.map(allInProgressMatches);
     }
 }

@@ -3,15 +3,18 @@ package pl.football.worldcup;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import pl.football.worldcup.model.FootballMatch;
+import pl.football.worldcup.model.MatchScore;
+
 public interface ScoreBoard {
 
     Long startMatch(String homeTeam, String awayTeam);
 
     Long startMatch(String homeTeam, String awayTeam, LocalDateTime startTime);
 
-    boolean updateScore(Long id, Score score);
+    boolean updateScore(Long id, MatchScore score);
 
     void finishMatch(Long id);
 
-    List<Match> getSummaryMatchesByTotalScore();
+    List<FootballMatch> getSummaryMatchesByTotalScore();
 }

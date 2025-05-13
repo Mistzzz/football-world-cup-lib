@@ -7,9 +7,12 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import pl.football.worldcup.model.FootballMatch;
+import pl.football.worldcup.model.MatchScore;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class FootballWorldCupScoreBoardTest {
@@ -35,17 +38,40 @@ class FootballWorldCupScoreBoardTest {
         Long matchId = scoreBoard.startMatch(HOME_TEAM, AWAY_TEAM);
 
         // THEN
-        List<Match> summary = scoreBoard.getSummaryMatchesByTotalScore();
+        List<FootballMatch> summary = scoreBoard.getSummaryMatchesByTotalScore();
         assertNotNull(matchId);
         assertEquals(1, summary.size());
 
-        Match match = summary.get(0);
+        FootballMatch match = summary.get(0);
         assertEquals(HOME_TEAM, match.homeTeam());
         assertEquals(AWAY_TEAM, match.awayTeam());
 
-        Score score = match.score();
+        MatchScore score = match.score();
         assertEquals(0, score.homeScore());
         assertEquals(0, score.awayScore());
         assertEquals(0, match.getTotalScore());
+    }
+
+    @Test
+    @Order(20)
+    void shouldUpdateMatchSuccessfully() {
+        // GIVEN
+        Long matchId = scoreBoard.startMatch(HOME_TEAM, AWAY_TEAM);
+
+        // WHEN
+        boolean successfulUpdate = scoreBoard.updateScore(matchId, new MatchScore(0, 1));
+
+        // THEN
+        List<FootballMatch> summaryMatches = scoreBoard.getSummaryMatchesByTotalScore();
+        assertTrue(successfulUpdate);
+        assertEquals(1, summaryMatches.size());
+        FootballMatch match = summaryMatches.get(0);
+        assertEquals(HOME_TEAM, match.homeTeam());
+        assertEquals(AWAY_TEAM, match.awayTeam());
+
+        MatchScore matchScore = match.score();
+        assertEquals(0, matchScore.homeScore());
+        assertEquals(1, matchScore.awayScore());
+        assertEquals(1, match.getTotalScore());
     }
 }

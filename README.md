@@ -1,7 +1,7 @@
 # Football World Cup Score Board
 
 The boards support the following operations:
-1. **Start a game**. When a game starts, it should capture (being initial score 0-0)
+1. **Start a game**. When a game starts, it should capture (being initial score 0-0)\
    a. Home team\
    b. Away Team
 2. **Finish a game**. It will remove a match from the scoreboard.
@@ -44,5 +44,5 @@ This library has exposed only ScoreBoard interface with proper implementation. W
     ```
 
 ## Output for provided test case
-You can see the example usage in test class [FootballWorldCupScoreBoardTest.java](src/test/java/pl/football/worldcup/FootballWorldCupScoreBoardTest.java).<br>
-All other releated classes also have implemented tests, which you can se in ptoper directory.
+You can see the example usage in test class [FootballWorldCupScoreBoardTest.java](src/test/java/pl/football/worldcup/FootballWorldCupScoreBoardTest.java).\
+All other releated classes also have implemented tests, which you can see in proper directory.

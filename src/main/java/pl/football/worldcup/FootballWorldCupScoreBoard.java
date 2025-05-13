@@ -1,6 +1,7 @@
 package pl.football.worldcup;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -12,19 +13,23 @@ import pl.football.worldcup.storage.MatchStorage;
 public class FootballWorldCupScoreBoard implements ScoreBoard {
 
     private final MatchStorage matchStorage;
+    private final MatchFactory matchFactory;
 
     @Override
-    public Long createMatch(String homeTeam, String awayTeam) {
-        return 0L;
+    public Long startMatch(String homeTeam, String awayTeam) {
+        return startMatch(homeTeam, awayTeam, LocalDateTime.now());
     }
 
     @Override
-    public Long createMatch(String homeTeam, String awayTeam, LocalDateTime startTime) {
-        return 0L;
+    public Long startMatch(String homeTeam, String awayTeam, LocalDateTime startTime) {
+        FootballMatch match = matchFactory.createMatch(homeTeam, awayTeam, startTime);
+        match = matchStorage.saveMatch(match);
+
+        return match.id();
     }
 
     @Override
-    public boolean updateMatch(Long id, MatchScore matchScore) {
+    public boolean updateScore(Long id, MatchScore matchScore) {
         return false;
     }
 
@@ -35,6 +40,12 @@ public class FootballWorldCupScoreBoard implements ScoreBoard {
 
     @Override
     public List<FootballMatch> getSummaryMatchesByTotalScore() {
-        return List.of();
+        List<FootballMatch> allInProgressMatches = matchStorage.getAllMatchesInProgress();
+        allInProgressMatches
+                .sort(Comparator.comparingInt(FootballMatch::getTotalScore)
+                        .thenComparing(FootballMatch::startTime)
+                        .reversed());
+
+        return allInProgressMatches;
     }
 }

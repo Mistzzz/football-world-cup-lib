@@ -24,4 +24,8 @@ public record FootballMatch(Long id, String homeTeam, String awayTeam, LocalDate
     public FootballMatch(FootballMatch match, LocalDateTime endTime) {
         this(match.id, match.homeTeam, match.awayTeam, match.startTime, Optional.of(endTime), match.matchScore);
     }
+
+    public Integer getTotalScore() {
+        return matchScore.homeScore() + matchScore.awayScore();
+    }
 }

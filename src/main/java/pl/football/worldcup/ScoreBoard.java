@@ -8,11 +8,11 @@ import pl.football.worldcup.model.MatchScore;
 
 public interface ScoreBoard {
 
-    Long createMatch(String homeTeam, String awayTeam);
+    Long startMatch(String homeTeam, String awayTeam);
 
-    Long createMatch(String homeTeam, String awayTeam, LocalDateTime startTime);
+    Long startMatch(String homeTeam, String awayTeam, LocalDateTime startTime);
 
-    boolean updateMatch(Long id, MatchScore matchScore);
+    boolean updateScore(Long id, MatchScore matchScore);
 
     void finishMatch(Long id);
 
